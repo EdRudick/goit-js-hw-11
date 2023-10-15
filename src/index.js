@@ -37,11 +37,9 @@ function onSearch(element) {
 
   isShown = 0;
   fetchGallery();
-  onRenderGallery(hits);
 }
 
 function onLoadMore() {
-  newsApiService.incrementPage();
   fetchGallery();
 }
 
@@ -52,24 +50,28 @@ async function fetchGallery() {
   const { hits, total } = result;
   isShown += hits.length;
 
-  if (!hits.length) {
-    Notify.failure(
-      `Sorry, there are no images matching your search query. Please try again.`
-    );
-    refs.loadMoreBtn.classList.add('is-hidden');
-    return;
-  }
+  try {
+    if (!hits.length) {
+      Notify.failure(
+        `Sorry, there are no images matching your search query. Please try again.`
+      );
+      refs.loadMoreBtn.classList.add('is-hidden');
+      return;
+    }
 
-  onRenderGallery(hits);
-  isShown += hits.length;
+    onRenderGallery(hits);
+    isShown += hits.length;
 
-  if (isShown < total) {
-    Notify.success(`Hooray! We found ${total} images !!!`);
-    refs.loadMoreBtn.classList.remove('is-hidden');
-  }
+    if (isShown < total) {
+      Notify.success(`Hooray! We found ${total} images !!!`);
+      refs.loadMoreBtn.classList.remove('is-hidden');
+    }
 
-  if (isShown >= total) {
-    Notify.info("We're sorry, but you've reached the end of search results.");
+    if (isShown >= total) {
+      Notify.info("We're sorry, but you've reached the end of search results.");
+    }
+  } catch (error) {
+    console.log(error);
   }
 }
 
